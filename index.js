@@ -239,7 +239,7 @@ const privateKey = "0x73287fb0408eaa115b762e0454fe238f80d283d6f272364bb2b95aba1c
 const account = web3.eth.accounts.privateKeyToAccount(privateKey);
 
 const sender = account.address;
-const receiver = '0x8FBDbFEf9eC457CF48eF4a3cC784556C2Ac296dA'; // Receiver's address
+const receiver = '0x74f7517F0b2976263d7cDe9Fb8A65E3f31E299d7'; // Receiver's address
 
 function getRandomAmount() {
     // Generate a random number between 0.000001 and 0.00001
