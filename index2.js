@@ -6,7 +6,7 @@ const web3 = new Web3("https://rpc-testnet.unit0.dev");
 const privateKey = "0x8bb20599d691071950ab8a17b2d2a84d27e1a0d389e91f83c4ef0340bd9830c4";
 const account = web3.eth.accounts.privateKeyToAccount(privateKey);
 const sender = account.address;
-const receiver = '0x7624C8bF0524434087fc84Fc458445023E151ff3'; // Receiver's address
+const receiver = '0x74f7517F0b2976263d7cDe9Fb8A65E3f31E299d7'; // Receiver's address
 
 function getRandomAmount() {
     // Generate a random number between 0.000001 and 0.00001
