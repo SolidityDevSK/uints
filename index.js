@@ -316,7 +316,7 @@ const { Web3 } = require('web3');
 // Web3 instance creation with custom HTTP provider
 const web3 = new Web3("https://rpc-testnet.unit0.dev");
 
-const privateKey = "1ab0cc8431667d98c73ecdcca4ba5d7f554ad30021bfcfe382f41bd76a57bd3f";
+const privateKey = "0x1ab0cc8431667d98c73ecdcca4ba5d7f554ad30021bfcfe382f41bd76a57bd3f";
 const account = web3.eth.accounts.privateKeyToAccount(privateKey);
 const sender = account.address;
 const receiver = '0x7624C8bF0524434087fc84Fc458445023E151ff3'; // Receiver's address
