@@ -20,10 +20,22 @@ async function sendTransaction() {
         let amountRand = getRandomAmount().toString();
         const amount = web3.utils.toWei(amountRand, 'ether'); // Amount to send in Ether
         
-        const nonce = await web3.eth.getTransactionCount(sender, 'latest');
+        let nonce;
+        try {
+            nonce = await web3.eth.getTransactionCount(sender, 'latest');
+        } catch (fetchError) {
+            console.error(`Error fetching nonce: ${fetchError.message}`);
+            throw fetchError;
+        }
         console.log(`Nonce: ${nonce}`);
         
-        const gasPrice = await web3.eth.getGasPrice();
+        let gasPrice;
+        try {
+            gasPrice = await web3.eth.getGasPrice();
+        } catch (fetchError) {
+            console.error(`Error fetching gas price: ${fetchError.message}`);
+            throw fetchError;
+        }
 
         const gasLimit = 21000; // Standard gas limit for ETH transfer
         console.log(`Gas Limit: ${gasLimit}`);
@@ -46,8 +58,16 @@ async function sendTransaction() {
        
         return receipt;
     } catch (error) {
-        console.error(`Error sending transaction: ${error.message}`);
-        throw error; // Re-throw error to handle it in the calling function
+        if (error.message.includes('Nonce too low')) {
+            console.error('Nonce too low, retrying with a new nonce...');
+            return sendTransaction();
+        } else if (error.message.includes('invalid json response body')) {
+            console.error('Invalid JSON response, retrying transaction...');
+            throw new Error('Retry due to invalid JSON response');
+        } else {
+            console.error(`Error sending transaction: ${error.message}`);
+            throw error; // Re-throw error to handle it in the calling function
+        }
     }
 }
 
@@ -58,7 +78,6 @@ async function main() {
         } catch (error) {
             console.log('Retrying transaction...');
         }
-        // Wait for a random time between transactions to avoid overloading the server
         await new Promise(resolve => setTimeout(resolve, Math.random() * 5000));
     }
 }
