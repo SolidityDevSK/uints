@@ -1,3 +1,5 @@
+
+
 const { Web3 } = require('web3');
 
 // Web3 instance creation with custom HTTP provider
@@ -6,7 +8,7 @@ const web3 = new Web3("https://rpc-testnet.unit0.dev");
 const privateKey = "0x1ab0cc8431667d98c73ecdcca4ba5d7f554ad30021bfcfe382f41bd76a57bd3f";
 const account = web3.eth.accounts.privateKeyToAccount(privateKey);
 const sender = account.address;
-const receiver = '0x7624C8bF0524434087fc84Fc458445023E151ff3'; // Receiver's address
+const receiver = '0x7624C8bF0524434087fc84Fc458445023E151ff3'; 
 
 function getRandomAmount() {
     // Generate a random number between 0.000001 and 0.00001
@@ -15,27 +17,32 @@ function getRandomAmount() {
     return (Math.random() * (max - min) + min).toFixed(8); // toFixed(8) ensures 8 decimal places
 }
 
+async function fetchWithRetry(fetchFn, retries = 5, delay = 1000) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await fetchFn();
+        } catch (error) {
+            if (i < retries - 1) {
+                console.error(`Fetch error: ${error.message}. Retrying in ${delay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                delay *= 2; // Exponential backoff
+            } else {
+                throw error;
+            }
+        }
+    }
+}
+
 async function sendTransaction() {
     try {
         let amountRand = getRandomAmount().toString();
         const amount = web3.utils.toWei(amountRand, 'ether'); // Amount to send in Ether
-        
-        let nonce;
-        try {
-            nonce = await web3.eth.getTransactionCount(sender, 'latest');
-        } catch (fetchError) {
-            console.error(`Error fetching nonce: ${fetchError.message}`);
-            throw fetchError;
-        }
+
+        const nonce = await fetchWithRetry(() => web3.eth.getTransactionCount(sender, 'latest'));
         console.log(`Nonce: ${nonce}`);
-        
-        let gasPrice;
-        try {
-            gasPrice = await web3.eth.getGasPrice();
-        } catch (fetchError) {
-            console.error(`Error fetching gas price: ${fetchError.message}`);
-            throw fetchError;
-        }
+
+        const gasPrice = await fetchWithRetry(() => web3.eth.getGasPrice());
+        console.log(`Gas Price: ${gasPrice}`);
 
         const gasLimit = 21000; // Standard gas limit for ETH transfer
         console.log(`Gas Limit: ${gasLimit}`);
@@ -55,7 +62,7 @@ async function sendTransaction() {
         const receipt = await web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
         console.log(`Transaction hash: ${receipt.transactionHash}`);
         console.log(`Transaction was successful: ${receipt.status}`);
-       
+
         return receipt;
     } catch (error) {
         if (error.message.includes('Nonce too low')) {
@@ -78,6 +85,7 @@ async function main() {
         } catch (error) {
             console.log('Retrying transaction...');
         }
+        // Wait for a random time between transactions to avoid overloading the server
         await new Promise(resolve => setTimeout(resolve, Math.random() * 5000));
     }
 }

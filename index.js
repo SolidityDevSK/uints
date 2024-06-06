@@ -379,6 +379,191 @@
 
 
 
+// const { Web3 } = require('web3');
+
+// // Web3 instance creation with custom HTTP provider
+// const web3 = new Web3("https://rpc-testnet.unit0.dev");
+
+// const privateKey = "0x73287fb0408eaa115b762e0454fe238f80d283d6f272364bb2b95aba1c34e6e3";
+// const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+// const sender = account.address;
+// const receiver = '0x74f7517F0b2976263d7cDe9Fb8A65E3f31E299d7'; // Receiver's address
+
+// function getRandomAmount() {
+//     // Generate a random number between 0.000001 and 0.00001
+//     const min = 0.000001;
+//     const max = 0.000003;
+//     return (Math.random() * (max - min) + min).toFixed(8); // toFixed(8) ensures 8 decimal places
+// }
+
+// async function sendTransaction() {
+//     try {
+//         let amountRand = getRandomAmount().toString();
+//         const amount = web3.utils.toWei(amountRand, 'ether'); // Amount to send in Ether
+        
+//         let nonce;
+//         try {
+//             nonce = await web3.eth.getTransactionCount(sender, 'latest');
+//         } catch (fetchError) {
+//             console.error(`Error fetching nonce: ${fetchError.message}`);
+//             throw fetchError;
+//         }
+//         console.log(`Nonce: ${nonce}`);
+        
+//         let gasPrice;
+//         try {
+//             gasPrice = await web3.eth.getGasPrice();
+//         } catch (fetchError) {
+//             console.error(`Error fetching gas price: ${fetchError.message}`);
+//             throw fetchError;
+//         }
+
+//         const gasLimit = 21000; // Standard gas limit for ETH transfer
+//         console.log(`Gas Limit: ${gasLimit}`);
+
+//         const transaction = {
+//             'to': receiver,
+//             'value': amount,
+//             'nonce': nonce,
+//             'gas': gasLimit,
+//             'gasPrice': gasPrice,
+//             'chainId': 88817 // Chain ID for testnet
+//         };
+
+//         const signedTransaction = await account.signTransaction(transaction);
+//         console.log(`Signed Transaction: ${signedTransaction.rawTransaction}`);
+
+//         const receipt = await web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
+//         console.log(`Transaction hash: ${receipt.transactionHash}`);
+//         console.log(`Transaction was successful: ${receipt.status}`);
+       
+//         return receipt;
+//     } catch (error) {
+//         if (error.message.includes('Nonce too low')) {
+//             console.error('Nonce too low, retrying with a new nonce...');
+//             return sendTransaction();
+//         } else if (error.message.includes('invalid json response body')) {
+//             console.error('Invalid JSON response, retrying transaction...');
+//             throw new Error('Retry due to invalid JSON response');
+//         } else {
+//             console.error(`Error sending transaction: ${error.message}`);
+//             throw error; // Re-throw error to handle it in the calling function
+//         }
+//     }
+// }
+
+// async function main() {
+//     while (true) {
+//         try {
+//             await sendTransaction();
+//         } catch (error) {
+//             console.log('Retrying transaction...');
+//         }
+//         // Wait for a random time between transactions to avoid overloading the server
+//         await new Promise(resolve => setTimeout(resolve, Math.random() * 5000));
+//     }
+// }
+
+// main();
+
+
+// const { Web3 } = require('web3');
+
+// // Web3 instance creation with custom HTTP provider
+// const web3 = new Web3("https://rpc-testnet.unit0.dev");
+
+// const privateKey = "0x73287fb0408eaa115b762e0454fe238f80d283d6f272364bb2b95aba1c34e6e3";
+// const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+// const sender = account.address;
+// const receiver = '0x74f7517F0b2976263d7cDe9Fb8A65E3f31E299d7'; // Receiver's address
+
+// function getRandomAmount() {
+//     // Generate a random number between 0.000001 and 0.00001
+//     const min = 0.000001;
+//     const max = 0.000003;
+//     return (Math.random() * (max - min) + min).toFixed(8); // toFixed(8) ensures 8 decimal places
+// }
+
+// async function sendTransaction(retryCount = 0) {
+//     const maxRetries = 5;
+//     const backoffDelay = 1000 * Math.pow(2, retryCount); // Exponential backoff
+
+//     try {
+//         let amountRand = getRandomAmount().toString();
+//         const amount = web3.utils.toWei(amountRand, 'ether'); // Amount to send in Ether
+        
+//         let nonce;
+//         try {
+//             nonce = await web3.eth.getTransactionCount(sender, 'latest');
+//         } catch (fetchError) {
+//             console.error(`Error fetching nonce: ${fetchError.message}`);
+//             throw fetchError;
+//         }
+//         console.log(`Nonce: ${nonce}`);
+        
+//         let gasPrice;
+//         try {
+//             gasPrice = await web3.eth.getGasPrice();
+//         } catch (fetchError) {
+//             console.error(`Error fetching gas price: ${fetchError.message}`);
+//             throw fetchError;
+//         }
+
+//         const gasLimit = 21000; // Standard gas limit for ETH transfer
+//         console.log(`Gas Limit: ${gasLimit}`);
+
+//         const transaction = {
+//             'to': receiver,
+//             'value': amount,
+//             'nonce': nonce,
+//             'gas': gasLimit,
+//             'gasPrice': gasPrice,
+//             'chainId': 88817 // Chain ID for testnet
+//         };
+
+//         const signedTransaction = await account.signTransaction(transaction);
+//         console.log(`Signed Transaction: ${signedTransaction.rawTransaction}`);
+
+//         const receipt = await web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
+//         console.log(`Transaction hash: ${receipt.transactionHash}`);
+//         console.log(`Transaction was successful: ${receipt.status}`);
+       
+//         return receipt;
+//     } catch (error) {
+//         if (error.message.includes('Nonce too low')) {
+//             console.error('Nonce too low, retrying with a new nonce...');
+//             return sendTransaction(retryCount + 1);
+//         } else if (error.message.includes('invalid json response body')) {
+//             console.error('Invalid JSON response, retrying transaction...');
+//             if (retryCount < maxRetries) {
+//                 console.log(`Retrying in ${backoffDelay}ms...`);
+//                 await new Promise(resolve => setTimeout(resolve, backoffDelay));
+//                 return sendTransaction(retryCount + 1);
+//             } else {
+//                 throw new Error('Max retries reached due to invalid JSON response');
+//             }
+//         } else {
+//             console.error(`Error sending transaction: ${error.message}`);
+//             throw error; // Re-throw error to handle it in the calling function
+//         }
+//     }
+// }
+
+// async function main() {
+//     while (true) {
+//         try {
+//             await sendTransaction();
+//         } catch (error) {
+//             console.log('Retrying transaction...');
+//         }
+//         // Wait for a random time between transactions to avoid overloading the server
+//         await new Promise(resolve => setTimeout(resolve, Math.random() * 5000));
+//     }
+// }
+
+// main();
+
+
 const { Web3 } = require('web3');
 
 // Web3 instance creation with custom HTTP provider
@@ -396,27 +581,32 @@ function getRandomAmount() {
     return (Math.random() * (max - min) + min).toFixed(8); // toFixed(8) ensures 8 decimal places
 }
 
+async function fetchWithRetry(fetchFn, retries = 5, delay = 1000) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await fetchFn();
+        } catch (error) {
+            if (i < retries - 1) {
+                console.error(`Fetch error: ${error.message}. Retrying in ${delay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                delay *= 2; // Exponential backoff
+            } else {
+                throw error;
+            }
+        }
+    }
+}
+
 async function sendTransaction() {
     try {
         let amountRand = getRandomAmount().toString();
         const amount = web3.utils.toWei(amountRand, 'ether'); // Amount to send in Ether
-        
-        let nonce;
-        try {
-            nonce = await web3.eth.getTransactionCount(sender, 'latest');
-        } catch (fetchError) {
-            console.error(`Error fetching nonce: ${fetchError.message}`);
-            throw fetchError;
-        }
+
+        const nonce = await fetchWithRetry(() => web3.eth.getTransactionCount(sender, 'latest'));
         console.log(`Nonce: ${nonce}`);
-        
-        let gasPrice;
-        try {
-            gasPrice = await web3.eth.getGasPrice();
-        } catch (fetchError) {
-            console.error(`Error fetching gas price: ${fetchError.message}`);
-            throw fetchError;
-        }
+
+        const gasPrice = await fetchWithRetry(() => web3.eth.getGasPrice());
+        console.log(`Gas Price: ${gasPrice}`);
 
         const gasLimit = 21000; // Standard gas limit for ETH transfer
         console.log(`Gas Limit: ${gasLimit}`);
@@ -436,7 +626,7 @@ async function sendTransaction() {
         const receipt = await web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
         console.log(`Transaction hash: ${receipt.transactionHash}`);
         console.log(`Transaction was successful: ${receipt.status}`);
-       
+
         return receipt;
     } catch (error) {
         if (error.message.includes('Nonce too low')) {
