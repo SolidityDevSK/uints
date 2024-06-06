@@ -605,7 +605,7 @@ async function sendTransaction() {
         const nonce = await fetchWithRetry(() => web3.eth.getTransactionCount(sender, 'latest'));
         console.log(`Nonce: ${nonce}`);
 
-        const gasPrice = await fetchWithRetry(() => web3.eth.getGasPrice());
+        const gasPrice = web3.utils.toWei('0.0000000025', 'ether'); // Set gas price to 2.5 Gwei
         console.log(`Gas Price: ${gasPrice}`);
 
         const gasLimit = 21000; // Standard gas limit for ETH transfer
@@ -649,8 +649,10 @@ async function main() {
         } catch (error) {
             console.log('Retrying transaction...');
         }
-        // Wait for a random time between transactions to avoid overloading the server
-        await new Promise(resolve => setTimeout(resolve, Math.random() * 5000));
+        // Wait for a random time between 10 and 20 seconds between transactions to avoid overloading the server
+        const delay = getRandomDelay();
+        console.log(`Waiting for ${delay}ms before next transaction...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
     }
 }
 

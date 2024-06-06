@@ -1,5 +1,3 @@
-
-
 const { Web3 } = require('web3');
 
 // Web3 instance creation with custom HTTP provider
@@ -15,6 +13,13 @@ function getRandomAmount() {
     const min = 0.000001;
     const max = 0.000003;
     return (Math.random() * (max - min) + min).toFixed(8); // toFixed(8) ensures 8 decimal places
+}
+
+function getRandomDelay() {
+    // Generate a random delay between 10 and 20 seconds
+    const min = 10000;
+    const max = 20000;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 async function fetchWithRetry(fetchFn, retries = 5, delay = 1000) {
@@ -41,7 +46,7 @@ async function sendTransaction() {
         const nonce = await fetchWithRetry(() => web3.eth.getTransactionCount(sender, 'latest'));
         console.log(`Nonce: ${nonce}`);
 
-        const gasPrice = await fetchWithRetry(() => web3.eth.getGasPrice());
+        const gasPrice = web3.utils.toWei('0.0000000025', 'ether'); // Set gas price to 2.5 Gwei
         console.log(`Gas Price: ${gasPrice}`);
 
         const gasLimit = 21000; // Standard gas limit for ETH transfer
@@ -85,8 +90,10 @@ async function main() {
         } catch (error) {
             console.log('Retrying transaction...');
         }
-        // Wait for a random time between transactions to avoid overloading the server
-        await new Promise(resolve => setTimeout(resolve, Math.random() * 5000));
+        // Wait for a random time between 10 and 20 seconds between transactions to avoid overloading the server
+        const delay = getRandomDelay();
+        console.log(`Waiting for ${delay}ms before next transaction...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
     }
 }
 
